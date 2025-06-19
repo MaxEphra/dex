@@ -2,104 +2,170 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DEX - IMCASH</title>
-  <link rel="stylesheet" href="style.css">
+  <title>DEX MAX</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: white;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 500px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #1e1e1e;
+      border-radius: 8px;
+    }
+    h1 {
+      text-align: center;
+      color: #4da6ff;
+    }
+    .input-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 4px;
+      border: none;
+      background-color: #2a2a2a;
+      color: white;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #00c853;
+      border: none;
+      color: white;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .status p {
+      margin: 5px 0;
+    }
+    .alert {
+      position: fixed;
+      top: 20px;
+      right: -300px;
+      background-color: #00c853;
+      color: white;
+      padding: 15px;
+      border-radius: 4px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      transition: right 0.5s ease;
+      z-index: 999;
+    }
+    .alert.show {
+      right: 20px;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <h1>DEX - IMCASH</h1>
+    <h1>DEX MAX</h1>
     <div class="input-group">
-      <label for="buyAmount">Comprar com USDT:</label>
+      <label for="buyAmount">Você paga (USDT):</label>
       <input type="number" id="buyAmount">
-      <button onclick="comprarTokens()">Comprar</button>
+      <button onclick="comprarTokens()">Comprar IMCASH</button>
     </div>
     <div class="input-group">
-      <label for="sellAmount">Vender IMCASH:</label>
+      <label for="sellAmount">Você vende (IMCASH):</label>
       <input type="number" id="sellAmount">
-      <button onclick="venderTokens()">Vender</button>
+      <button onclick="venderTokens()">Vender IMCASH</button>
     </div>
     <div class="status">
       <p>Preço do IMCASH: <span id="preco">0</span> USDT</p>
-      <p>Liquidez (USDT): <span id="liquidez">0</span></p>
-      <p>Tokens em Liquidez (IMCASH): <span id="liquidezTokens">0</span></p>
-      <p>Carteira do Usuário: <span id="carteira">1000000</span> USDT</p>
-      <p>Tokens do Usuário: <span id="tokensUser">0</span> IMCASH</p>
+      <p>IMCASH em Circulação: <span id="emCirculacao">0</span> / 21,000,000</p>
+      <p>Liquidez Total: <span id="liquidez">0</span> USDT</p>
       <p>Fundo Social: <span id="fundoSocial">0</span> USDT</p>
       <p>Fundo Projeto: <span id="fundoProjeto">0</span> USDT</p>
-      <p>Distribuído para Holders: <span id="distribuidoHolders">0</span> USDT</p>
     </div>
-  </div>  <script>
+  </div>
+  <div id="alert" class="alert"></div>  <script>
     let poolUSDT = 500;
     let poolIMCASH = 500;
     let carteiraUser = 1000000;
     let tokensUser = 0;
     let fundoSocial = 0;
     let fundoProjeto = 0;
-    let distribuidoHolders = 0;
 
     function atualizarInterface() {
-      document.getElementById("preco").textContent = (poolUSDT / poolIMCASH).toFixed(6);
-      document.getElementById("liquidez").textContent = poolUSDT.toFixed(2);
-      document.getElementById("liquidezTokens").textContent = poolIMCASH.toFixed(2);
-      document.getElementById("carteira").textContent = carteiraUser.toFixed(2);
-      document.getElementById("tokensUser").textContent = tokensUser.toFixed(6);
-      document.getElementById("fundoSocial").textContent = fundoSocial.toFixed(2);
-      document.getElementById("fundoProjeto").textContent = fundoProjeto.toFixed(2);
-      document.getElementById("distribuidoHolders").textContent = distribuidoHolders.toFixed(2);
+      const preco = poolUSDT / poolIMCASH;
+      document.getElementById("preco").textContent = preco.toFixed(4);
+      document.getElementById("liquidez").textContent = poolUSDT.toFixed(4);
+      document.getElementById("fundoSocial").textContent = fundoSocial.toFixed(4);
+      document.getElementById("fundoProjeto").textContent = fundoProjeto.toFixed(4);
+      document.getElementById("emCirculacao").textContent = (tokensUser + poolIMCASH).toFixed(4);
+    }
+
+    function showAlert(msg) {
+      const alertBox = document.getElementById("alert");
+      alertBox.textContent = msg;
+      alertBox.classList.add("show");
+      setTimeout(() => {
+        alertBox.classList.remove("show");
+      }, 3000);
     }
 
     function comprarTokens() {
-      let valor = parseFloat(document.getElementById("buyAmount").value);
+      const valor = parseFloat(document.getElementById("buyAmount").value);
       if (isNaN(valor) || valor <= 0 || valor > carteiraUser) {
-        alert("Valor inválido ou saldo insuficiente.");
+        showAlert("Valor inválido ou saldo insuficiente.");
         return;
       }
+      const limite = poolUSDT * 0.15;
+      const valorUsado = Math.min(valor, limite);
+      const taxa = valorUsado * 0.02;
+      const valorLiquido = valorUsado - taxa;
+      const precoAtual = poolUSDT / poolIMCASH;
+      const tokensComprados = valorLiquido / precoAtual;
 
-      let limite = poolUSDT * 0.15;
-      if (valor > limite) valor = limite;
-
-      let taxa = valor * 0.02;
-      let valorLiquido = valor - taxa;
-
-      let precoAtual = poolUSDT / poolIMCASH;
-      let tokensRecebidos = valorLiquido / precoAtual;
-
-      carteiraUser -= valor;
-      tokensUser += tokensRecebidos;
-      poolUSDT += valor * 0.015; // Apenas a parte da taxa vai para liquidez
-      fundoProjeto += valor * 0.0005;
-      fundoSocial += valor * 0.0005;
-      distribuidoHolders += valor * 0.002;
-      poolIMCASH -= tokensRecebidos;
+      carteiraUser -= valorUsado;
+      tokensUser += tokensComprados;
+      poolIMCASH -= tokensComprados;
+      poolUSDT += valorUsado * 0.015;
+      fundoProjeto += valorUsado * 0.0005;
+      fundoSocial += valorUsado * 0.0005;
 
       atualizarInterface();
+      showAlert("Compra realizada com sucesso!");
     }
 
     function venderTokens() {
-      let valorToken = parseFloat(document.getElementById("sellAmount").value);
-      if (isNaN(valorToken) || valorToken <= 0 || valorToken > tokensUser) {
-        alert("Valor inválido ou tokens insuficientes.");
+      const tokensVendidos = parseFloat(document.getElementById("sellAmount").value);
+      if (isNaN(tokensVendidos) || tokensVendidos <= 0 || tokensVendidos > tokensUser) {
+        showAlert("Valor inválido ou tokens insuficientes.");
+        return;
+      }
+      const precoAtual = poolUSDT / poolIMCASH;
+      const valorBruto = tokensVendidos * precoAtual;
+      const taxa = valorBruto * 0.02;
+      const valorLiquido = valorBruto - taxa;
+
+      const limite = poolUSDT * 0.15;
+      if (valorLiquido > limite) {
+        showAlert("Venda excede o limite de 15% da liquidez.");
         return;
       }
 
-      let precoAtual = poolUSDT / poolIMCASH;
-      let valorBruto = valorToken * precoAtual;
-      let taxa = valorBruto * 0.02;
-      let valorLiquido = valorBruto - taxa;
-
-      let limite = poolUSDT * 0.15;
-      if (valorLiquido > limite) valorLiquido = limite;
-
-      tokensUser -= valorToken;
+      tokensUser -= tokensVendidos;
       carteiraUser += valorLiquido;
       poolUSDT -= valorLiquido;
-      poolUSDT += valorBruto * 0.015; // Apenas a parte da taxa vai para liquidez
+      poolUSDT += valorBruto * 0.015;
       fundoProjeto += valorBruto * 0.0005;
       fundoSocial += valorBruto * 0.0005;
-      distribuidoHolders += valorBruto * 0.002;
-      poolIMCASH += valorToken;
+      poolIMCASH += tokensVendidos;
 
       atualizarInterface();
+      showAlert("Venda realizada com sucesso!");
     }
 
     atualizarInterface();
