@@ -1,661 +1,123 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+<!DOCTYPE html><html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DEX MAX - IMCASH Exchange</title>
+  <title>Simulador DEX - IMCASH</title>
   <style>
-    :root {
-      --primary: #4361ee;
-      --primary-dark: #3a56d4;
-      --success: #2ecc71;
-      --success-dark: #27ae60;
-      --danger: #e74c3c;
-      --danger-dark: #c0392b;
-      --text-primary: #2c3e50;
-      --text-secondary: #7f8c8d;
-      --bg-primary: #ffffff;
-      --bg-secondary: #f8f9fa;
-      --bg-card: #ffffff;
-      --border-color: #e0e0e0;
-      --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    }
-
-    .dark-mode {
-      --text-primary: #ecf0f1;
-      --text-secondary: #bdc3c7;
-      --bg-primary: #121212;
-      --bg-secondary: #1e1e1e;
-      --bg-card: #2d2d2d;
-      --border-color: #444;
-      --shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    }
-
-    * {
-      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-    }
-
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--bg-primary);
-      color: var(--text-primary);
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       margin: 0;
-      padding: 0;
+      padding: 2rem;
     }
-
-    .container {
-      max-width: 800px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-    }
-
-    .logo {
-      font-size: 1.8rem;
-      font-weight: bold;
-      color: var(--primary);
-    }
-
-    .theme-toggle {
-      background: var(--bg-secondary);
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--text-primary);
-    }
-
-    .dex-tabs {
-      display: flex;
-      margin-bottom: 1rem;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .tab {
-      padding: 0.75rem 1.5rem;
-      cursor: pointer;
-      font-weight: 500;
-      border-bottom: 2px solid transparent;
-    }
-
-    .tab.active {
-      border-bottom: 2px solid var(--primary);
-      color: var(--primary);
-    }
-
-    .card {
-      background: var(--bg-card);
-      border-radius: 12px;
-      padding: 1.5rem;
-      box-shadow: var(--shadow);
-      margin-bottom: 1.5rem;
-    }
-
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 500;
-      color: var(--text-secondary);
-    }
-
-    .input-group {
-      display: flex;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .input-group input {
-      flex: 1;
-      padding: 0.75rem;
-      border: none;
+    input, button {
+      padding: 10px;
+      margin: 10px;
       font-size: 1rem;
-      background: var(--bg-card);
-      color: var(--text-primary);
     }
-
-    .input-group .token-selector {
-      background: var(--bg-secondary);
-      padding: 0 1rem;
-      display: flex;
-      align-items: center;
-      font-weight: 500;
-      color: var(--text-primary);
-    }
-
-    .btn {
-      color: white;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
+    .box {
+      border: 1px solid #555;
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+      background-color: #1e1e1e;
+      max-width: 400px;
       width: 100%;
     }
-
-    .btn-buy {
-      background: var(--success);
-    }
-
-    .btn-buy:hover {
-      background: var(--success-dark);
-      transform: translateY(-2px);
-    }
-
-    .btn-sell {
-      background: var(--danger);
-    }
-
-    .btn-sell:hover {
-      background: var(--danger-dark);
-      transform: translateY(-2px);
-    }
-
-    .pool-info {
-      margin-top: 1.5rem;
-    }
-
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 0.75rem 0;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .info-row:last-child {
-      border-bottom: none;
-    }
-
-    .error-message {
-      color: var(--danger);
-      font-size: 0.85rem;
-      margin-top: 0.25rem;
-      display: none;
-    }
-
-    .token-icon {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: var(--primary);
-      color: white;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      margin-right: 0.5rem;
-    }
-
-    .alert-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      opacity: 0;
-      pointer-events: none;
-      transition: all 0.3s ease-out;
-      transform: translateY(-20px);
-    }
-
-    .alert-modal.active {
-      opacity: 1;
-      pointer-events: all;
-      transform: translateY(0);
-    }
-
-    .alert-content {
-      background: var(--bg-card);
-      border-radius: 12px;
-      padding: 2rem;
-      max-width: 400px;
-      width: 90%;
-      box-shadow: var(--shadow);
-      text-align: center;
-      border-left: 5px solid #2ecc71;
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.02); }
-      100% { transform: scale(1); }
-    }
-
-    .alert-title {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-      color: #2ecc71;
-      font-weight: bold;
-    }
-
-    .alert-message {
-      margin-bottom: 2rem;
-      line-height: 1.5;
-      color: var(--text-primary);
-    }
-
-    .alert-btn {
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      border: none;
-      background: #2ecc71;
-      color: white;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .alert-btn:hover {
-      background: #27ae60;
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <div class="logo">
-        <span class="token-icon">IM</span>DEX MAX
-      </div>
-      <button class="theme-toggle" id="themeToggle">
-        <span id="themeIcon">🌙</span>
-        <span id="themeText">Modo Escuro</span>
-      </button>
-    </div>
+  <h1>Simulador DEX - IMCASH</h1>  <div class="box">
+    <label for="valorCompra">Valor para comprar (USDT):</label>
+    <input type="number" id="valorCompra" placeholder="Ex: 100">
+    <button onclick="comprarTokens()">Comprar</button><label for="valorVenda">Valor para vender (IMCASH):</label>
+<input type="number" id="valorVenda" placeholder="Ex: 50">
+<button onclick="venderTokens()">Vender</button>
 
-    <div class="dex-tabs">
-      <div class="tab active" id="buyTab">Comprar</div>
-      <div class="tab" id="sellTab">Vender</div>
-    </div>
+  </div>  <div class="box">
+    <p><strong>Preço Atual (1 IMCASH):</strong> <span id="preco"></span> USDT</p>
+    <p><strong>Liquidez:</strong> <span id="liquidez"></span> USDT</p>
+    <p><strong>Carteira do usuário:</strong> <span id="carteira"></span> USDT</p>
+    <p><strong>Tokens do usuário:</strong> <span id="tokensUser"></span> IMCASH</p>
+    <p><strong>Fundo Social:</strong> <span id="fundoSocial"></span> USDT</p>
+    <p><strong>Fundo Projeto:</strong> <span id="fundoProjeto"></span> USDT</p>
+  </div>  <script>
+    let poolUSDT = 500;
+    let poolIMCASH = 500;
+    let fundoSocial = 0;
+    let fundoProjeto = 0;
+    let carteiraUser = 1000000;
+    let tokensUser = 0;
 
-    <div class="card" id="buyCard">
-      <div class="form-group">
-        <label for="buyAmount">Você paga (USDT)</label>
-        <div class="input-group">
-          <input type="number" id="buyAmount" placeholder="0" min="0" step="0.01" oninput="calculateBuyEstimate()">
-          <div class="token-selector">USDT</div>
-        </div>
-        <small class="text-muted">Saldo: <span id="usdtBalance">1,000,000.00</span> USDT</small>
-      </div>
-      
-      <div class="form-group">
-        <label for="buyReceive">Você recebe (IMCASH)</label>
-        <div class="input-group">
-          <!-- Alterado para tipo "text" e adicionada classe para formatação -->
-          <input type="text" id="buyReceive" placeholder="0" min="0" readonly class="formatted-input">
-          <div class="token-selector">IMCASH</div>
-        </div>
-        <div class="error-message" id="buyError"></div>
-        <small class="text-muted">Taxa: 1% Liquidez + 0.05% Fundo Social + 0.05% Projeto</small>
-      </div>
-      
-      <button id="buyBtn" class="btn btn-buy">Comprar IMCASH</button>
-    </div>
-
-    <div class="card" id="sellCard" style="display: none;">
-      <div class="form-group">
-        <label for="sellAmount">Você vende (IMCASH)</label>
-        <div class="input-group">
-          <input type="number" id="sellAmount" placeholder="0" min="0" step="0.01" oninput="calculateSellEstimate()">
-          <div class="token-selector">IMCASH</div>
-        </div>
-        <small class="text-muted">Saldo: <span id="imcashBalance">0.00</span> IMCASH</small>
-      </div>
-      
-      <div class="form-group">
-        <label for="sellReceive">Você recebe (USDT)</label>
-        <div class="input-group">
-          <!-- Alterado para tipo "text" e adicionada classe para formatação -->
-          <input type="text" id="sellReceive" placeholder="0" min="0" readonly class="formatted-input">
-          <div class="token-selector">USDT</div>
-        </div>
-        <div class="error-message" id="sellError"></div>
-        <small class="text-muted">Taxa: 1% Liquidez + 0.05% Fundo Social + 0.05% Projeto</small>
-      </div>
-      
-      <button id="sellBtn" class="btn btn-sell">Vender IMCASH</button>
-    </div>
-
-    <div class="card pool-info">
-      <div class="info-row">
-        <span>Preço do IMCASH</span>
-        <span id="currentPrice">1.0000 USDT</span>
-      </div>
-      <div class="info-row">
-        <span>IMCASH em Circulação</span>
-        <span id="tokensInPool">500.00 / 21,000,000</span>
-      </div>
-      <div class="info-row">
-        <span>Liquidez Total</span>
-        <span id="totalLiquidity">500.00 USDT</span>
-      </div>
-      <div class="info-row">
-        <span>Fundo Social</span>
-        <span id="socialFund">0.00 USDT</span>
-      </div>
-      <div class="info-row">
-        <span>Fundo Projeto</span>
-        <span id="projectFund">0.00 USDT</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal de Alerta -->
-  <div class="alert-modal" id="alertModal">
-    <div class="alert-content">
-      <h3 class="alert-title" id="alertTitle">Sucesso!</h3>
-      <p class="alert-message" id="alertMessage"></p>
-      <button class="alert-btn" id="alertBtn">OK</button>
-    </div>
-  </div>
-
-  <script>
-    // Variáveis de estado
-    const state = {
-      usdtBalance: 1000000,
-      imcashBalance: 0,
-      tokensInPool: 500,
-      totalLiquidity: 500,
-      socialFund: 0,
-      projectFund: 0,
-      currentPrice: 1,
-      darkMode: false
-    };
-
-    // Elementos DOM
-    const elements = {
-      buyTab: document.getElementById('buyTab'),
-      sellTab: document.getElementById('sellTab'),
-      buyCard: document.getElementById('buyCard'),
-      sellCard: document.getElementById('sellCard'),
-      buyAmount: document.getElementById('buyAmount'),
-      buyReceive: document.getElementById('buyReceive'),
-      sellAmount: document.getElementById('sellAmount'),
-      sellReceive: document.getElementById('sellReceive'),
-      usdtBalance: document.getElementById('usdtBalance'),
-      imcashBalance: document.getElementById('imcashBalance'),
-      tokensInPool: document.getElementById('tokensInPool'),
-      currentPrice: document.getElementById('currentPrice'),
-      totalLiquidity: document.getElementById('totalLiquidity'),
-      socialFund: document.getElementById('socialFund'),
-      projectFund: document.getElementById('projectFund'),
-      buyBtn: document.getElementById('buyBtn'),
-      sellBtn: document.getElementById('sellBtn'),
-      buyError: document.getElementById('buyError'),
-      sellError: document.getElementById('sellError'),
-      themeToggle: document.getElementById('themeToggle'),
-      themeIcon: document.getElementById('themeIcon'),
-      themeText: document.getElementById('themeText'),
-      alertModal: document.getElementById('alertModal'),
-      alertTitle: document.getElementById('alertTitle'),
-      alertMessage: document.getElementById('alertMessage'),
-      alertBtn: document.getElementById('alertBtn')
-    };
-
-    // Formata números
-    const format = {
-      number: (value) => {
-        if (isNaN(value)) return '0.00';
-        return new Intl.NumberFormat('pt-BR', { 
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 4 
-        }).format(value);
-      },
-      currency: (value) => new Intl.NumberFormat('pt-BR', { 
-        style: 'currency', 
-        currency: 'USD',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }).format(value).replace('US$', '')
-    };
-
-    // Mostra alerta personalizado
-    function showAlert(title, message) {
-      elements.alertTitle.textContent = title;
-      elements.alertMessage.textContent = message;
-      elements.alertModal.classList.add('active');
-      
-      // Fecha automaticamente após 3 segundos
-      setTimeout(() => {
-        elements.alertModal.classList.remove('active');
-      }, 3000);
+    function atualizarTela() {
+      const preco = (poolUSDT / poolIMCASH).toFixed(6);
+      document.getElementById("preco").innerText = preco;
+      document.getElementById("liquidez").innerText = poolUSDT.toFixed(2);
+      document.getElementById("carteira").innerText = carteiraUser.toFixed(2);
+      document.getElementById("tokensUser").innerText = tokensUser.toFixed(6);
+      document.getElementById("fundoSocial").innerText = fundoSocial.toFixed(2);
+      document.getElementById("fundoProjeto").innerText = fundoProjeto.toFixed(2);
     }
 
-    // Calcula o preço atual do IMCASH
-    function calculatePrice() {
-      if (state.tokensInPool <= 500) return 1;
-      const extraTokens = state.tokensInPool - 500;
-      return Math.min(1 * Math.pow(1.001, extraTokens), 1000);
-    }
-
-    // Atualiza a interface
-    function updateUI() {
-      state.currentPrice = calculatePrice();
-      elements.currentPrice.textContent = `${format.number(state.currentPrice)} USDT`;
-      elements.usdtBalance.textContent = format.number(state.usdtBalance);
-      elements.imcashBalance.textContent = format.number(state.imcashBalance);
-      elements.tokensInPool.textContent = `${format.number(state.tokensInPool)} / 21,000,000`;
-      elements.totalLiquidity.textContent = `${format.number(state.totalLiquidity)} USDT`;
-      elements.socialFund.textContent = `${format.number(state.socialFund)} USDT`;
-      elements.projectFund.textContent = `${format.number(state.projectFund)} USDT`;
-    }
-
-    // Função para calcular e mostrar o valor estimado na compra
-    function calculateBuyEstimate() {
-      const usdtAmount = parseFloat(elements.buyAmount.value) || 0;
-      
-      if (usdtAmount <= 0) {
-        elements.buyReceive.value = '';
-        elements.buyError.style.display = 'none';
+    function comprarTokens() {
+      let valor = parseFloat(document.getElementById("valorCompra").value);
+      if (isNaN(valor) || valor <= 0 || valor > carteiraUser) {
+        alert("Valor inválido ou saldo insuficiente.");
         return;
       }
 
-      // Atualiza o preço antes do cálculo
-      state.currentPrice = calculatePrice();
-      
-      // Cálculo corrigido com taxa de 1.1%
-      const imcashAmount = (usdtAmount / state.currentPrice) * 0.989;
-      
-      // Verifica limite do pool (15%)
-      const poolLimit = state.tokensInPool * 0.15;
-      
-      if (imcashAmount > poolLimit) {
-        elements.buyError.textContent = `Limite de compra: ${format.number(poolLimit)} IMCASH (15% do pool)`;
-        elements.buyError.style.display = 'block';
-        elements.buyReceive.value = format.number(poolLimit);
-      } else {
-        elements.buyError.style.display = 'none';
-        elements.buyReceive.value = format.number(imcashAmount);
-      }
+      let limite = poolUSDT * 0.15;
+      if (valor > limite) valor = limite;
+
+      let taxas = valor * 0.011;
+      let valorLiquido = valor - taxas;
+      let preco = poolUSDT / poolIMCASH;
+      let tokensRecebidos = valorLiquido / preco;
+
+      poolUSDT += valor * 0.01;
+      fundoSocial += valor * 0.0005;
+      fundoProjeto += valor * 0.0005;
+
+      carteiraUser -= valor;
+      tokensUser += tokensRecebidos;
+      poolIMCASH -= tokensRecebidos;
+
+      atualizarTela();
     }
 
-    // Função para calcular e mostrar o valor estimado na venda
-    function calculateSellEstimate() {
-      const imcashAmount = parseFloat(elements.sellAmount.value) || 0;
-      
-      if (imcashAmount <= 0) {
-        elements.sellReceive.value = '';
-        elements.sellError.style.display = 'none';
+    function venderTokens() {
+      let valorTokens = parseFloat(document.getElementById("valorVenda").value);
+      if (isNaN(valorTokens) || valorTokens <= 0 || valorTokens > tokensUser) {
+        alert("Valor inválido ou tokens insuficientes.");
         return;
       }
 
-      state.currentPrice = calculatePrice();
-      const usdtAmount = imcashAmount * state.currentPrice * 0.989;
-      const poolLimit = state.tokensInPool * 0.15;
-      
-      if (imcashAmount > poolLimit) {
-        elements.sellError.textContent = `Limite de venda: ${format.number(poolLimit)} IMCASH (15% do pool)`;
-        elements.sellError.style.display = 'block';
-        elements.sellReceive.value = format.number(poolLimit * state.currentPrice * 0.989);
-      } else {
-        elements.sellError.style.display = 'none';
-        elements.sellReceive.value = format.number(usdtAmount);
-      }
+      let preco = poolUSDT / poolIMCASH;
+      let valorVenda = valorTokens * preco;
+      let taxas = valorVenda * 0.011;
+      let valorLiquido = valorVenda - taxas;
+
+      poolUSDT -= valorLiquido;
+      poolIMCASH += valorTokens;
+
+      fundoSocial += valorVenda * 0.0005;
+      fundoProjeto += valorVenda * 0.0005;
+      poolUSDT += valorVenda * 0.01;
+
+      carteiraUser += valorLiquido;
+      tokensUser -= valorTokens;
+
+      atualizarTela();
     }
 
-    // Alternar entre abas de compra e venda
-    function switchTab(tab) {
-      if (tab === 'buy') {
-        elements.buyTab.classList.add('active');
-        elements.sellTab.classList.remove('active');
-        elements.buyCard.style.display = 'block';
-        elements.sellCard.style.display = 'none';
-      } else {
-        elements.buyTab.classList.remove('active');
-        elements.sellTab.classList.add('active');
-        elements.buyCard.style.display = 'none';
-        elements.sellCard.style.display = 'block';
-      }
-    }
-
-    // Função para comprar IMCASH
-    function buyTokens() {
-      const usdtAmount = parseFloat(elements.buyAmount.value);
-      
-      if (isNaN(usdtAmount)) {
-        elements.buyError.textContent = 'Insira um valor válido';
-        elements.buyError.style.display = 'block';
-        return;
-      }
-      
-      if (usdtAmount <= 0) {
-        elements.buyError.textContent = 'O valor deve ser maior que zero';
-        elements.buyError.style.display = 'block';
-        return;
-      }
-      
-      if (usdtAmount > state.usdtBalance) {
-        elements.buyError.textContent = 'Saldo em USDT insuficiente';
-        elements.buyError.style.display = 'block';
-        return;
-      }
-      
-      state.currentPrice = calculatePrice();
-      const imcashAmount = usdtAmount / state.currentPrice * 0.989;
-      const liquidityFee = usdtAmount * 0.01;
-      const socialFee = usdtAmount * 0.0005;
-      const projectFee = usdtAmount * 0.0005;
-      
-      const poolLimit = state.tokensInPool * 0.15;
-      if (imcashAmount > poolLimit) {
-        elements.buyError.textContent = `Limite de compra: ${format.number(poolLimit)} IMCASH (15% do pool)`;
-        elements.buyError.style.display = 'block';
-        return;
-      }
-      
-      state.usdtBalance -= usdtAmount;
-      state.imcashBalance += imcashAmount;
-      state.tokensInPool += imcashAmount;
-      state.totalLiquidity += liquidityFee;
-      state.socialFund += socialFee;
-      state.projectFund += projectFee;
-      
-      updateUI();
-      elements.buyAmount.value = '';
-      elements.buyReceive.value = '';
-      elements.buyError.style.display = 'none';
-      
-      showAlert('Compra realizada!', `Você recebeu ${format.number(imcashAmount)} IMCASH`);
-    }
-
-    // Função para vender IMCASH
-    function sellTokens() {
-      const imcashAmount = parseFloat(elements.sellAmount.value);
-      
-      if (isNaN(imcashAmount) || imcashAmount <= 0) {
-        elements.sellError.textContent = 'Insira uma quantidade válida';
-        elements.sellError.style.display = 'block';
-        return;
-      }
-      
-      if (imcashAmount > state.imcashBalance) {
-        elements.sellError.textContent = 'Saldo em IMCASH insuficiente';
-        elements.sellError.style.display = 'block';
-        return;
-      }
-      
-      state.currentPrice = calculatePrice();
-      const usdtAmount = imcashAmount * state.currentPrice * 0.989;
-      const liquidityFee = imcashAmount * state.currentPrice * 0.01;
-      const socialFee = imcashAmount * state.currentPrice * 0.0005;
-      const projectFee = imcashAmount * state.currentPrice * 0.0005;
-      
-      const poolLimit = state.tokensInPool * 0.15;
-      if (imcashAmount > poolLimit) {
-        elements.sellError.textContent = `Limite de venda: ${format.number(poolLimit)} IMCASH (15% do pool)`;
-        elements.sellError.style.display = 'block';
-        return;
-      }
-      
-      state.usdtBalance += usdtAmount;
-      state.imcashBalance -= imcashAmount;
-      state.tokensInPool -= imcashAmount;
-      state.totalLiquidity += liquidityFee;
-      state.socialFund += socialFee;
-      state.projectFund += projectFee;
-      
-      updateUI();
-      elements.sellAmount.value = '';
-      elements.sellReceive.value = '';
-      elements.sellError.style.display = 'none';
-      
-      showAlert('Venda realizada!', `Você recebeu ${format.number(usdtAmount)} USDT`);
-    }
-
-    // Alternar tema claro/escuro
-    function toggleTheme() {
-      state.darkMode = !state.darkMode;
-      document.body.classList.toggle('dark-mode', state.darkMode);
-      
-      if (state.darkMode) {
-        elements.themeIcon.textContent = '☀️';
-        elements.themeText.textContent = 'Modo Claro';
-      } else {
-        elements.themeIcon.textContent = '🌙';
-        elements.themeText.textContent = 'Modo Escuro';
-      }
-    }
-
-    // Event Listeners
-    elements.buyAmount.addEventListener('input', calculateBuyEstimate);
-    elements.buyAmount.addEventListener('change', calculateBuyEstimate);
-    elements.sellAmount.addEventListener('input', calculateSellEstimate);
-    elements.sellAmount.addEventListener('change', calculateSellEstimate);
-    elements.buyBtn.addEventListener('click', buyTokens);
-    elements.sellBtn.addEventListener('click', sellTokens);
-    elements.buyTab.addEventListener('click', () => switchTab('buy'));
-    elements.sellTab.addEventListener('click', () => switchTab('sell'));
-    elements.themeToggle.addEventListener('click', toggleTheme);
-    elements.alertBtn.addEventListener('click', () => {
-      elements.alertModal.classList.remove('active');
-    });
-
-    // Inicialização
-    updateUI();
-    
-    // Garante que as funções estão disponíveis globalmente
-    window.calculateBuyEstimate = calculateBuyEstimate;
-    window.calculateSellEstimate = calculateSellEstimate;
-  </script>
-</body>
+    atualizarTela();
+  </script></body>
 </html>
