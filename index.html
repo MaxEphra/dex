@@ -14,11 +14,11 @@
       --danger-dark: #c0392b;
       --text-primary: #2c3e50;
       --text-secondary: #7f8c8d;
-      --bg-primary: #ffffff;
-      --bg-secondary: #f8f9fa;
+      --bg-primary: #f8f9fa;
+      --bg-secondary: #e9ecef;
       --bg-card: #ffffff;
-      --border-color: #e0e0e0;
-      --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --border-color: #dee2e6;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
     .dark-mode {
@@ -33,6 +33,7 @@
 
     * {
       transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+      box-sizing: border-box;
     }
 
     body {
@@ -41,12 +42,13 @@
       color: var(--text-primary);
       margin: 0;
       padding: 0;
+      min-height: 100vh;
     }
 
     .container {
       max-width: 800px;
-      margin: 2rem auto;
-      padding: 0 1rem;
+      margin: 0 auto;
+      padding: 1rem;
     }
 
     .header {
@@ -54,6 +56,7 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 2rem;
+      padding-top: 1rem;
     }
 
     .logo {
@@ -201,73 +204,62 @@
       margin-right: 0.5rem;
     }
 
-    .alert-modal {
+    /* Novo estilo para o alerta animado */
+    .alert-top {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      background-color: #2ecc71; /* verde */
+      color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       z-index: 1000;
-      opacity: 0;
-      pointer-events: none;
-      transition: all 0.3s ease-out;
-      transform: translateY(-20px);
+      transform: translateX(110%);
+      transition: transform 0.5s ease-out;
+      max-width: 350px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
     }
 
-    .alert-modal.active {
-      opacity: 1;
-      pointer-events: all;
-      transform: translateY(0);
-    }
-
-    .alert-content {
-      background: var(--bg-card);
-      border-radius: 12px;
-      padding: 2rem;
-      max-width: 400px;
-      width: 90%;
-      box-shadow: var(--shadow);
-      text-align: center;
-      border-left: 5px solid #2ecc71;
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.02); }
-      100% { transform: scale(1); }
+    .alert-top.show {
+      transform: translateX(0);
     }
 
     .alert-title {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-      color: #2ecc71;
       font-weight: bold;
+      font-size: 1.1rem;
     }
 
     .alert-message {
-      margin-bottom: 2rem;
-      line-height: 1.5;
-      color: var(--text-primary);
+      font-size: 0.95rem;
     }
 
-    .alert-btn {
-      padding: 0.75rem 1.5rem;
+    .footer {
+      text-align: center;
+      padding: 1.5rem 0;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .info-note {
+      background-color: #e9ecef;
+      padding: 15px;
       border-radius: 8px;
-      border: none;
-      background: #2ecc71;
-      color: white;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s;
+      margin-top: 20px;
+      font-size: 0.9rem;
+      border-left: 4px solid var(--primary);
     }
 
-    .alert-btn:hover {
-      background: #27ae60;
+    .info-note h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      color: var(--primary);
+    }
+
+    .info-note p {
+      margin: 5px 0;
     }
   </style>
 </head>
@@ -301,12 +293,11 @@
       <div class="form-group">
         <label for="buyReceive">Você recebe (IMCASH)</label>
         <div class="input-group">
-          <!-- Alterado para tipo "text" e adicionada classe para formatação -->
-          <input type="text" id="buyReceive" placeholder="0" min="0" readonly class="formatted-input">
+          <input type="text" id="buyReceive" placeholder="0" min="0" readonly>
           <div class="token-selector">IMCASH</div>
         </div>
         <div class="error-message" id="buyError"></div>
-        <small class="text-muted">Taxa: 1% Liquidez + 0.05% Fundo Social + 0.05% Projeto</small>
+        <small class="text-muted">Taxa: 1.5% Liquidez + 0.5% Holders e Staking</small>
       </div>
       
       <button id="buyBtn" class="btn btn-buy">Comprar IMCASH</button>
@@ -325,12 +316,11 @@
       <div class="form-group">
         <label for="sellReceive">Você recebe (USDT)</label>
         <div class="input-group">
-          <!-- Alterado para tipo "text" e adicionada classe para formatação -->
-          <input type="text" id="sellReceive" placeholder="0" min="0" readonly class="formatted-input">
+          <input type="text" id="sellReceive" placeholder="0" min="0" readonly>
           <div class="token-selector">USDT</div>
         </div>
         <div class="error-message" id="sellError"></div>
-        <small class="text-muted">Taxa: 1% Liquidez + 0.05% Fundo Social + 0.05% Projeto</small>
+        <small class="text-muted">Taxa: 1.5% Liquidez + 0.5% Holders e Staking</small>
       </div>
       
       <button id="sellBtn" class="btn btn-sell">Vender IMCASH</button>
@@ -350,37 +340,40 @@
         <span id="totalLiquidity">500.00 USDT</span>
       </div>
       <div class="info-row">
-        <span>Fundo Social</span>
-        <span id="socialFund">0.00 USDT</span>
-      </div>
-      <div class="info-row">
-        <span>Fundo Projeto</span>
-        <span id="projectFund">0.00 USDT</span>
+        <span>Holders e Staking</span>
+        <span id="holdersFund">0.00 USDT</span>
       </div>
     </div>
+    
+  </div>
+  
+  <div class="footer">
+    DEX MAX Exchange &copy; 2025 | Plataforma de troca IMCASH/USDT
   </div>
 
-  <!-- Modal de Alerta -->
-  <div class="alert-modal" id="alertModal">
-    <div class="alert-content">
-      <h3 class="alert-title" id="alertTitle">Sucesso!</h3>
-      <p class="alert-message" id="alertMessage"></p>
-      <button class="alert-btn" id="alertBtn">OK</button>
-    </div>
+  <!-- Novo Alerta no topo -->
+  <div class="alert-top" id="alertTop">
+    <div class="alert-title" id="alertTopTitle">Sucesso!</div>
+    <div class="alert-message" id="alertTopMessage"></div>
   </div>
 
   <script>
-    // Variáveis de estado
-    const state = {
-      usdtBalance: 1000000,
+    // =============================================
+    // CONFIGURAÇÃO INICIAL - AJUSTE ESTES VALORES!
+    // =============================================
+    const initialState = {
+      usdtBalance: 1000000000,  // Altere este valor para ajustar o saldo inicial
       imcashBalance: 0,
       tokensInPool: 500,
       totalLiquidity: 500,
-      socialFund: 0,
-      projectFund: 0,
+      holdersFund: 0,
       currentPrice: 1,
       darkMode: false
     };
+    // =============================================
+
+    // Copia o estado inicial para o estado atual
+    const state = {...initialState};
 
     // Elementos DOM
     const elements = {
@@ -397,8 +390,7 @@
       tokensInPool: document.getElementById('tokensInPool'),
       currentPrice: document.getElementById('currentPrice'),
       totalLiquidity: document.getElementById('totalLiquidity'),
-      socialFund: document.getElementById('socialFund'),
-      projectFund: document.getElementById('projectFund'),
+      holdersFund: document.getElementById('holdersFund'),
       buyBtn: document.getElementById('buyBtn'),
       sellBtn: document.getElementById('sellBtn'),
       buyError: document.getElementById('buyError'),
@@ -406,10 +398,9 @@
       themeToggle: document.getElementById('themeToggle'),
       themeIcon: document.getElementById('themeIcon'),
       themeText: document.getElementById('themeText'),
-      alertModal: document.getElementById('alertModal'),
-      alertTitle: document.getElementById('alertTitle'),
-      alertMessage: document.getElementById('alertMessage'),
-      alertBtn: document.getElementById('alertBtn')
+      alertTop: document.getElementById('alertTop'),
+      alertTopTitle: document.getElementById('alertTopTitle'),
+      alertTopMessage: document.getElementById('alertTopMessage')
     };
 
     // Formata números
@@ -429,15 +420,15 @@
       }).format(value).replace('US$', '')
     };
 
-    // Mostra alerta personalizado
+    // Mostra alerta personalizado no topo
     function showAlert(title, message) {
-      elements.alertTitle.textContent = title;
-      elements.alertMessage.textContent = message;
-      elements.alertModal.classList.add('active');
+      elements.alertTopTitle.textContent = title;
+      elements.alertTopMessage.textContent = message;
+      elements.alertTop.classList.add('show');
       
       // Fecha automaticamente após 3 segundos
       setTimeout(() => {
-        elements.alertModal.classList.remove('active');
+        elements.alertTop.classList.remove('show');
       }, 3000);
     }
 
@@ -456,8 +447,7 @@
       elements.imcashBalance.textContent = format.number(state.imcashBalance);
       elements.tokensInPool.textContent = `${format.number(state.tokensInPool)} / 21,000,000`;
       elements.totalLiquidity.textContent = `${format.number(state.totalLiquidity)} USDT`;
-      elements.socialFund.textContent = `${format.number(state.socialFund)} USDT`;
-      elements.projectFund.textContent = `${format.number(state.projectFund)} USDT`;
+      elements.holdersFund.textContent = `${format.number(state.holdersFund)} USDT`;
     }
 
     // Função para calcular e mostrar o valor estimado na compra
@@ -473,8 +463,9 @@
       // Atualiza o preço antes do cálculo
       state.currentPrice = calculatePrice();
       
-      // Cálculo corrigido com taxa de 1.1%
-      const imcashAmount = (usdtAmount / state.currentPrice) * 0.989;
+      // Cálculo com nova taxa de 2% (1.5% liquidez + 0.5% holders)
+      const netAmount = usdtAmount * 0.98; // Valor líquido após taxas
+      const imcashAmount = netAmount / state.currentPrice;
       
       // Verifica limite do pool (15%)
       const poolLimit = state.tokensInPool * 0.15;
@@ -500,13 +491,14 @@
       }
 
       state.currentPrice = calculatePrice();
-      const usdtAmount = imcashAmount * state.currentPrice * 0.989;
+      const grossAmount = imcashAmount * state.currentPrice;
+      const usdtAmount = grossAmount * 0.98; // Valor líquido após taxas
       const poolLimit = state.tokensInPool * 0.15;
       
       if (imcashAmount > poolLimit) {
         elements.sellError.textContent = `Limite de venda: ${format.number(poolLimit)} IMCASH (15% do pool)`;
         elements.sellError.style.display = 'block';
-        elements.sellReceive.value = format.number(poolLimit * state.currentPrice * 0.989);
+        elements.sellReceive.value = format.number(poolLimit * state.currentPrice * 0.98);
       } else {
         elements.sellError.style.display = 'none';
         elements.sellReceive.value = format.number(usdtAmount);
@@ -551,10 +543,11 @@
       }
       
       state.currentPrice = calculatePrice();
-      const imcashAmount = usdtAmount / state.currentPrice * 0.989;
-      const liquidityFee = usdtAmount * 0.01;
-      const socialFee = usdtAmount * 0.0005;
-      const projectFee = usdtAmount * 0.0005;
+      const grossAmount = usdtAmount;
+      const liquidityFee = grossAmount * 0.015; // 1.5% para liquidez
+      const holdersFee = grossAmount * 0.005;   // 0.5% para holders
+      const netAmount = grossAmount - liquidityFee - holdersFee; // 98% líquido
+      const imcashAmount = netAmount / state.currentPrice;
       
       const poolLimit = state.tokensInPool * 0.15;
       if (imcashAmount > poolLimit) {
@@ -563,12 +556,14 @@
         return;
       }
       
-      state.usdtBalance -= usdtAmount;
+      // Atualiza saldos
+      state.usdtBalance -= grossAmount;
       state.imcashBalance += imcashAmount;
+      
+      // Atualiza pool e fundos
       state.tokensInPool += imcashAmount;
-      state.totalLiquidity += liquidityFee;
-      state.socialFund += socialFee;
-      state.projectFund += projectFee;
+      state.totalLiquidity += netAmount + liquidityFee; // Liquidez recebe 98% + taxa de 1.5%
+      state.holdersFund += holdersFee;
       
       updateUI();
       elements.buyAmount.value = '';
@@ -595,10 +590,10 @@
       }
       
       state.currentPrice = calculatePrice();
-      const usdtAmount = imcashAmount * state.currentPrice * 0.989;
-      const liquidityFee = imcashAmount * state.currentPrice * 0.01;
-      const socialFee = imcashAmount * state.currentPrice * 0.0005;
-      const projectFee = imcashAmount * state.currentPrice * 0.0005;
+      const grossAmount = imcashAmount * state.currentPrice;
+      const liquidityFee = grossAmount * 0.015; // 1.5% para liquidez
+      const holdersFee = grossAmount * 0.005;   // 0.5% para holders
+      const netAmount = grossAmount - liquidityFee - holdersFee; // 98% líquido
       
       const poolLimit = state.tokensInPool * 0.15;
       if (imcashAmount > poolLimit) {
@@ -607,19 +602,22 @@
         return;
       }
       
-      state.usdtBalance += usdtAmount;
+      // Atualiza saldos
       state.imcashBalance -= imcashAmount;
+      state.usdtBalance += netAmount;
+      
+      // Atualiza pool e fundos
       state.tokensInPool -= imcashAmount;
-      state.totalLiquidity += liquidityFee;
-      state.socialFund += socialFee;
-      state.projectFund += projectFee;
+      state.totalLiquidity -= netAmount; // Liquidez perde 98%
+      state.totalLiquidity += liquidityFee; // Adiciona taxa de liquidez
+      state.holdersFund += holdersFee;
       
       updateUI();
       elements.sellAmount.value = '';
       elements.sellReceive.value = '';
       elements.sellError.style.display = 'none';
       
-      showAlert('Venda realizada!', `Você recebeu ${format.number(usdtAmount)} USDT`);
+      showAlert('Venda realizada!', `Você recebeu ${format.number(netAmount)} USDT`);
     }
 
     // Alternar tema claro/escuro
@@ -646,9 +644,6 @@
     elements.buyTab.addEventListener('click', () => switchTab('buy'));
     elements.sellTab.addEventListener('click', () => switchTab('sell'));
     elements.themeToggle.addEventListener('click', toggleTheme);
-    elements.alertBtn.addEventListener('click', () => {
-      elements.alertModal.classList.remove('active');
-    });
 
     // Inicialização
     updateUI();
