@@ -7,21 +7,12 @@
   <style>
     :root {
       --primary: #2ecc71;
-      --primary-dark: #3a56d4;
+      --primary-dark: #27ae60;
       --success: #2ecc71;
       --success-dark: #27ae60;
       --danger: #e74c3c;
       --danger-dark: #c0392b;
-      --text-primary: #2c3e50;
-      --text-secondary: #7f8c8d;
-      --bg-primary: #f8f9fa;
-      --bg-secondary: #e9ecef;
-      --bg-card: #ffffff;
-      --border-color: #dee2e6;
-      --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    }
-
-    .dark-mode {
+      --warning: #f39c12;
       --text-primary: #ecf0f1;
       --text-secondary: #bdc3c7;
       --bg-primary: #121212;
@@ -29,6 +20,16 @@
       --bg-card: #2d2d2d;
       --border-color: #444;
       --shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .light-mode {
+      --text-primary: #2c3e50;
+      --text-secondary: #7f8c8d;
+      --bg-primary: #f8f9fa;
+      --bg-secondary: #e9ecef;
+      --bg-card: #ffffff;
+      --border-color: #dee2e6;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
     * {
@@ -172,6 +173,23 @@
       transform: translateY(-2px);
     }
 
+    .btn-reset {
+      background: #6c757d;
+      margin-top: 10px;
+    }
+
+    .btn-reset:hover {
+      background: #5a6268;
+    }
+
+    .btn-warning {
+      background: var(--warning);
+    }
+
+    .btn-warning:hover {
+      background: #e67e22;
+    }
+
     .pool-info {
       margin-top: 1.5rem;
     }
@@ -198,7 +216,6 @@
       width: 24px;
       height: 24px;
       border-radius: 50%;
-      
       color: #2ecc71;
       display: inline-flex;
       align-items: center;
@@ -245,7 +262,7 @@
     }
 
     .info-note {
-      background-color: #e9ecef;
+      background-color: var(--bg-secondary);
       padding: 15px;
       border-radius: 8px;
       margin-top: 20px;
@@ -273,6 +290,8 @@
       display: flex;
       justify-content: space-between;
       margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .stat-card {
@@ -281,15 +300,7 @@
       padding: 1rem;
       text-align: center;
       flex: 1;
-      margin: 0 0.5rem;
-    }
-
-    .stat-card:first-child {
-      margin-left: 0;
-    }
-
-    .stat-card:last-child {
-      margin-right: 0;
+      min-width: 200px;
     }
 
     .stat-label {
@@ -302,9 +313,74 @@
       font-size: 1.2rem;
       font-weight: bold;
     }
+
+    .data-persistence {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px dashed var(--border-color);
+    }
+
+    .save-status {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .admin-panel {
+      background-color: var(--bg-secondary);
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-top: 1.5rem;
+      border-left: 4px solid var(--warning);
+      display: none; /* Inicialmente oculto */
+    }
+
+    .admin-panel h3 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      color: var(--warning);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .admin-controls {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .admin-group {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .admin-input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .footer-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .footer-link:hover {
+      color: var(--primary);
+      text-decoration: underline;
+    }
   </style>
 </head>
-<body>
+<body class="dark-mode">
   <div class="container">
     <div class="header">
       <div class="logo">
@@ -312,8 +388,8 @@
         <span>CASH DEX</span>
       </div>
       <button class="theme-toggle" id="themeToggle">
-        <span id="themeIcon">🌙</span>
-        <span id="themeText">Modo Escuro</span>
+        <span id="themeIcon">☀️</span>
+        <span id="themeText">Modo Claro</span>
       </button>
     </div>
 
@@ -373,6 +449,16 @@
         <div class="stat-label">Preço do IMCASH</div>
         <div class="stat-value" id="currentPrice">1.0000 USDT</div>
       </div>
+    </div>
+
+    <div class="token-stats">
+      <div class="stat-card">
+        <div class="stat-label">Holders e Staking</div>
+        <div class="stat-value" id="holdersFund">0.00 USDT</div>
+      </div>
+    </div>
+
+    <div class="token-stats">
       <div class="stat-card">
         <div class="stat-label">Supply Total</div>
         <div class="stat-value">21,000,000 IMCASH</div>
@@ -384,24 +470,49 @@
         <span>IMCASH em Circulação</span>
         <span class="value-large" id="tokensInPool">500.00</span>
       </div>
+    </div>
+
+    <div class="card pool-info">
       <div class="info-row">
         <span>Liquidez Total</span>
         <span class="value-large" id="totalLiquidity">500.00 USDT</span>
       </div>
-      <div class="info-row">
-        <span>Holders e Staking</span>
-        <span class="value-large" id="holdersFund">0.00 USDT</span>
-      </div>
+    </div>
+
+    <div class="card pool-info">
       <div class="info-row">
         <span>Limite Máximo por Transação</span>
         <span class="value-large">15% do Pool</span>
       </div>
     </div>
-    
+
+    <!-- Painel de Controle para Ajustes -->
+    <div class="admin-panel" id="adminPanel">
+      <h3>⚙️ Painel de Controle</h3>
+      <div class="admin-controls">
+        <div class="admin-group">
+          <label>Ajustar Saldo USDT</label>
+          <input type="number" id="adjustUsdt" class="admin-input" placeholder="Novo saldo USDT">
+          <button class="btn btn-warning" id="adjustUsdtBtn">Aplicar</button>
+        </div>
+        
+        <div class="admin-group">
+          <label>Ajustar Saldo IMCASH</label>
+          <input type="number" id="adjustImcash" class="admin-input" placeholder="Novo saldo IMCASH">
+          <button class="btn btn-warning" id="adjustImcashBtn">Aplicar</button>
+        </div>
+        
+        <div class="admin-group">
+          <label>Resetar Sistema</label>
+          <button class="btn btn-reset" id="resetBtn">Resetar Dados</button>
+        </div>
+      </div>
+    </div>
+
   </div>
   
   <div class="footer">
-    DEX MAX Exchange &copy; 2025 | Plataforma de troca IMCASH/USDT
+    <span id="controlPanelLink" class="footer-link">DEX MAX &copy; 2025 | IMCASH/USDT Exchange Platform.</span>
   </div>
 
   <!-- Alerta no topo -->
@@ -412,22 +523,19 @@
 
   <script>
     // =============================================
-    // CONFIGURAÇÃO INICIAL - AJUSTE ESTES VALORES!
+    // CONFIGURAÇÃO INICIAL
     // =============================================
     const initialState = {
-      usdtBalance: 1000000,  // Altere este valor para ajustar o saldo inicial
+      usdtBalance: 1000000,
       imcashBalance: 0,
       tokensInPool: 500,
       totalLiquidity: 500,
       holdersFund: 0,
       currentPrice: 1,
-      darkMode: false,
-      maxSupply: 21000000    // Supply máximo de 21 milhões
+      darkMode: true,
+      maxSupply: 21000000
     };
     // =============================================
-
-    // Copia o estado inicial para o estado atual
-    const state = {...initialState};
 
     // Elementos DOM
     const elements = {
@@ -454,7 +562,14 @@
       themeText: document.getElementById('themeText'),
       alertTop: document.getElementById('alertTop'),
       alertTopTitle: document.getElementById('alertTopTitle'),
-      alertTopMessage: document.getElementById('alertTopMessage')
+      alertTopMessage: document.getElementById('alertTopMessage'),
+      adjustUsdt: document.getElementById('adjustUsdt'),
+      adjustUsdtBtn: document.getElementById('adjustUsdtBtn'),
+      adjustImcash: document.getElementById('adjustImcash'),
+      adjustImcashBtn: document.getElementById('adjustImcashBtn'),
+      resetBtn: document.getElementById('resetBtn'),
+      adminPanel: document.getElementById('adminPanel'),
+      controlPanelLink: document.getElementById('controlPanelLink')
     };
 
     // Formata números
@@ -465,14 +580,11 @@
           minimumFractionDigits: 2,
           maximumFractionDigits: 4 
         }).format(value);
-      },
-      currency: (value) => new Intl.NumberFormat('pt-BR', { 
-        style: 'currency', 
-        currency: 'USD',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }).format(value).replace('US$', '')
+      }
     };
+
+    // Estado da aplicação
+    let state;
 
     // Mostra alerta personalizado no topo
     function showAlert(title, message) {
@@ -486,11 +598,32 @@
       }, 3000);
     }
 
-    // Calcula o preço atual do IMCASH - CORREÇÃO: removido limite de $1000
+    // Salva o estado no localStorage
+    function saveState() {
+      localStorage.setItem('dexMaxState', JSON.stringify(state));
+    }
+
+    // Carrega o estado do localStorage
+    function loadState() {
+      const savedState = localStorage.getItem('dexMaxState');
+      if (savedState) {
+        return JSON.parse(savedState);
+      }
+      return {...initialState};
+    }
+
+    // Reseta o sistema para o estado inicial
+    function resetSystem() {
+      state = {...initialState};
+      saveState();
+      updateUI();
+      showAlert('Sistema Resetado!', 'Todos os dados foram restaurados para o estado inicial.');
+    }
+
+    // Calcula o preço atual do IMCASH
     function calculatePrice() {
       if (state.tokensInPool <= 500) return 1;
       const extraTokens = state.tokensInPool - 500;
-      // Fórmula exponencial sem limite máximo
       return 1 * Math.pow(1.001, extraTokens);
     }
 
@@ -515,14 +648,10 @@
         return;
       }
 
-      // Atualiza o preço antes do cálculo
       state.currentPrice = calculatePrice();
-      
-      // Cálculo com nova taxa de 2% (1.5% liquidez + 0.5% holders)
-      const netAmount = usdtAmount * 0.98; // Valor líquido após taxas
+      const netAmount = usdtAmount * 0.98;
       const imcashAmount = netAmount / state.currentPrice;
       
-      // Verifica limite do pool (15%)
       const poolLimit = state.tokensInPool * 0.15;
       
       if (imcashAmount > poolLimit) {
@@ -547,7 +676,7 @@
 
       state.currentPrice = calculatePrice();
       const grossAmount = imcashAmount * state.currentPrice;
-      const usdtAmount = grossAmount * 0.98; // Valor líquido após taxas
+      const usdtAmount = grossAmount * 0.98;
       const poolLimit = state.tokensInPool * 0.15;
       
       if (imcashAmount > poolLimit) {
@@ -599,12 +728,11 @@
       
       state.currentPrice = calculatePrice();
       const grossAmount = usdtAmount;
-      const liquidityFee = grossAmount * 0.015; // 1.5% para liquidez
-      const holdersFee = grossAmount * 0.005;   // 0.5% para holders
-      const netAmount = grossAmount - liquidityFee - holdersFee; // 98% líquido
+      const liquidityFee = grossAmount * 0.015;
+      const holdersFee = grossAmount * 0.005;
+      const netAmount = grossAmount - liquidityFee - holdersFee;
       const imcashAmount = netAmount / state.currentPrice;
       
-      // Verifica se excede o supply máximo
       if (state.tokensInPool + imcashAmount > state.maxSupply) {
         elements.buyError.textContent = `Limite máximo de tokens atingido (${format.number(state.maxSupply)} IMCASH)`;
         elements.buyError.style.display = 'block';
@@ -618,16 +746,15 @@
         return;
       }
       
-      // Atualiza saldos
       state.usdtBalance -= grossAmount;
       state.imcashBalance += imcashAmount;
-      
-      // Atualiza pool e fundos
       state.tokensInPool += imcashAmount;
-      state.totalLiquidity += netAmount + liquidityFee; // Liquidez recebe 98% + taxa de 1.5%
+      state.totalLiquidity += netAmount + liquidityFee;
       state.holdersFund += holdersFee;
       
       updateUI();
+      saveState();
+      
       elements.buyAmount.value = '';
       elements.buyReceive.value = '';
       elements.buyError.style.display = 'none';
@@ -653,9 +780,9 @@
       
       state.currentPrice = calculatePrice();
       const grossAmount = imcashAmount * state.currentPrice;
-      const liquidityFee = grossAmount * 0.015; // 1.5% para liquidez
-      const holdersFee = grossAmount * 0.005;   // 0.5% para holders
-      const netAmount = grossAmount - liquidityFee - holdersFee; // 98% líquido
+      const liquidityFee = grossAmount * 0.015;
+      const holdersFee = grossAmount * 0.005;
+      const netAmount = grossAmount - liquidityFee - holdersFee;
       
       const poolLimit = state.tokensInPool * 0.15;
       if (imcashAmount > poolLimit) {
@@ -664,17 +791,16 @@
         return;
       }
       
-      // Atualiza saldos
       state.imcashBalance -= imcashAmount;
       state.usdtBalance += netAmount;
-      
-      // Atualiza pool e fundos
       state.tokensInPool -= imcashAmount;
-      state.totalLiquidity -= netAmount; // Liquidez perde 98%
-      state.totalLiquidity += liquidityFee; // Adiciona taxa de liquidez
+      state.totalLiquidity -= netAmount;
+      state.totalLiquidity += liquidityFee;
       state.holdersFund += holdersFee;
       
       updateUI();
+      saveState();
+      
       elements.sellAmount.value = '';
       elements.sellReceive.value = '';
       elements.sellError.style.display = 'none';
@@ -682,33 +808,111 @@
       showAlert('Venda realizada!', `Você recebeu ${format.number(netAmount)} USDT`);
     }
 
-    // Alternar tema claro/escuro
-    function toggleTheme() {
-      state.darkMode = !state.darkMode;
-      document.body.classList.toggle('dark-mode', state.darkMode);
+    // Ajustar saldo de USDT manualmente
+    function adjustUsdtBalance() {
+      const newBalance = parseFloat(elements.adjustUsdt.value);
       
-      if (state.darkMode) {
-        elements.themeIcon.textContent = '☀️';
-        elements.themeText.textContent = 'Modo Claro';
+      if (!isNaN(newBalance) && newBalance >= 0) {
+        state.usdtBalance = newBalance;
+        updateUI();
+        saveState();
+        showAlert('Saldo Atualizado!', `Novo saldo USDT: ${format.number(newBalance)}`);
+        elements.adjustUsdt.value = '';
       } else {
-        elements.themeIcon.textContent = '🌙';
-        elements.themeText.textContent = 'Modo Escuro';
+        showAlert('Erro', 'Insira um valor válido para o saldo');
       }
     }
 
-    // Event Listeners
-    elements.buyAmount.addEventListener('input', calculateBuyEstimate);
-    elements.buyAmount.addEventListener('change', calculateBuyEstimate);
-    elements.sellAmount.addEventListener('input', calculateSellEstimate);
-    elements.sellAmount.addEventListener('change', calculateSellEstimate);
-    elements.buyBtn.addEventListener('click', buyTokens);
-    elements.sellBtn.addEventListener('click', sellTokens);
-    elements.buyTab.addEventListener('click', () => switchTab('buy'));
-    elements.sellTab.addEventListener('click', () => switchTab('sell'));
-    elements.themeToggle.addEventListener('click', toggleTheme);
+    // Ajustar saldo de IMCASH manualmente
+    function adjustImcashBalance() {
+      const newBalance = parseFloat(elements.adjustImcash.value);
+      
+      if (!isNaN(newBalance) && newBalance >= 0) {
+        state.imcashBalance = newBalance;
+        updateUI();
+        saveState();
+        showAlert('Saldo Atualizado!', `Novo saldo IMCASH: ${format.number(newBalance)}`);
+        elements.adjustImcash.value = '';
+      } else {
+        showAlert('Erro', 'Insira um valor válido para o saldo');
+      }
+    }
 
-    // Inicialização
-    updateUI();
+    // Alternar tema claro/escuro
+    function toggleTheme() {
+      state.darkMode = !state.darkMode;
+      
+      if (state.darkMode) {
+        document.body.classList.remove('light-mode');
+        elements.themeIcon.textContent = '☀️';
+        elements.themeText.textContent = 'Modo Claro';
+      } else {
+        document.body.classList.add('light-mode');
+        elements.themeIcon.textContent = '🌙';
+        elements.themeText.textContent = 'Modo Escuro';
+      }
+      
+      saveState();
+    }
+
+    // Alternar visibilidade do painel de controle
+    function toggleControlPanel() {
+      if (elements.adminPanel.style.display === 'none') {
+        elements.adminPanel.style.display = 'block';
+        elements.controlPanelLink.classList.add('active');
+        showAlert('Painel Aberto', 'Painel de controle ativado');
+      } else {
+        elements.adminPanel.style.display = 'none';
+        elements.controlPanelLink.classList.remove('active');
+      }
+    }
+
+    // Inicialização da aplicação
+    function initApp() {
+      // Carrega estado salvo ou usa o inicial
+      state = loadState();
+      
+      // Aplica o tema salvo
+      if (state.darkMode) {
+        document.body.classList.remove('light-mode');
+        elements.themeIcon.textContent = '☀️';
+        elements.themeText.textContent = 'Modo Claro';
+      } else {
+        document.body.classList.add('light-mode');
+        elements.themeIcon.textContent = '🌙';
+        elements.themeText.textContent = 'Modo Escuro';
+      }
+      
+      // Atualiza a UI
+      updateUI();
+      
+      // Event Listeners
+      elements.buyAmount.addEventListener('input', calculateBuyEstimate);
+      elements.buyAmount.addEventListener('change', calculateBuyEstimate);
+      elements.sellAmount.addEventListener('input', calculateSellEstimate);
+      elements.sellAmount.addEventListener('change', calculateSellEstimate);
+      elements.buyBtn.addEventListener('click', buyTokens);
+      elements.sellBtn.addEventListener('click', sellTokens);
+      elements.buyTab.addEventListener('click', () => switchTab('buy'));
+      elements.sellTab.addEventListener('click', () => switchTab('sell'));
+      elements.themeToggle.addEventListener('click', toggleTheme);
+      elements.adjustUsdtBtn.addEventListener('click', adjustUsdtBalance);
+      elements.adjustImcashBtn.addEventListener('click', adjustImcashBalance);
+      elements.resetBtn.addEventListener('click', resetSystem);
+      elements.controlPanelLink.addEventListener('click', toggleControlPanel);
+      
+      // Suporte para pressionar Enter nos campos de ajuste
+      elements.adjustUsdt.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') adjustUsdtBalance();
+      });
+      
+      elements.adjustImcash.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') adjustImcashBalance();
+      });
+    }
+
+    // Inicia a aplicação quando o documento estiver pronto
+    document.addEventListener('DOMContentLoaded', initApp);
     
     // Garante que as funções estão disponíveis globalmente
     window.calculateBuyEstimate = calculateBuyEstimate;
