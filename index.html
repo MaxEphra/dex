@@ -334,7 +334,7 @@
       border-radius: 12px;
       margin-top: 1.5rem;
       border-left: 4px solid var(--warning);
-      display: none; /* Inicialmente oculto */
+      display: none;
     }
 
     .admin-panel h3 {
@@ -762,7 +762,7 @@
       showAlert('Compra realizada!', `Você recebeu ${format.number(imcashAmount)} IMCASH`);
     }
 
-    // Função para vender IMCASH
+    // Função para vender IMCASH (CORRIGIDA)
     function sellTokens() {
       const imcashAmount = parseFloat(elements.sellAmount.value);
       
@@ -794,8 +794,9 @@
       state.imcashBalance -= imcashAmount;
       state.usdtBalance += netAmount;
       state.tokensInPool -= imcashAmount;
-      state.totalLiquidity -= netAmount;
-      state.totalLiquidity += liquidityFee;
+      
+      // CORREÇÃO CRÍTICA: cálculo correto da liquidez
+      state.totalLiquidity = state.totalLiquidity - netAmount + liquidityFee;
       state.holdersFund += holdersFee;
       
       updateUI();
